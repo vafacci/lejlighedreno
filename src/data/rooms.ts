@@ -1,0 +1,70 @@
+import type { Room } from "./types";
+
+export const rooms: Room[] = [
+  {
+    id: "bathroom",
+    number: "01",
+    title: "Badeværelse",
+    summary: "Afrenset og malet, nyt toiletsæde, håndbruser og nye rørdele ved gulvafløbet.",
+    intro: "Tydeligt slid, belægninger og misfarvninger på gulv, rør, vask og træværk.",
+    beforePoints: [
+      "Slid og misfarvninger på gulv og fuger",
+      "Belægninger omkring afløb",
+      "Slidte overgange mellem gulv og væg",
+      "Mørke belægninger omkring rør og loft",
+      "Slidt maling og træværk omkring døren",
+      "Slidte afslutninger omkring vask",
+      "Ældre og slidte rørdele",
+    ],
+    workDone: [
+      "Rengøring, afrensning og kalkfjernelse",
+      "Behandling af mørke og misfarvede områder",
+      "Maling og opfriskning af overflader, herunder omkring rør",
+      "Udskiftning af rørdele ved gulvafløb",
+      "Nyt toiletsæde og ny håndbruser",
+      "Fugning og afslutninger",
+      "Montering af badeforhængsstang",
+      "Opfriskning af dør og træværk",
+    ],
+    workNote: "Mørke belægninger blev behandlet med et produkt beregnet til skimmel.",
+    result: "Rengjort og istandsat med opfriskede overflader og flere udskiftede mindre dele.",
+  },
+  {
+    id: "bedroom",
+    number: "02",
+    title: "Soveværelse",
+    summary: "Loft, vægge, dør og træværk er malet.",
+    intro: "Loftet havde revner og afskalninger, og vægge og træværk trængte til opfriskning.",
+    beforePoints: [
+      "Revner i loftet",
+      "Afskalninger og løsnet maling",
+      "Generelt slidt overflade",
+    ],
+    workDone: [
+      "Klargøring af overflader",
+      "Maling af loft og vægge",
+      "Opfriskning og maling af dør og træværk",
+    ],
+    result: "Loft, vægge og træværk er malet og fremstår mere ensartede.",
+  },
+  {
+    id: "kitchen",
+    number: "03",
+    title: "Køkken",
+    summary: "Nyt gulv, malet loft og vægge samt ny belysning.",
+    intro: "Afskalning og revner i loftet samt et gulv med et kraftigt slidt område.",
+    beforePoints: [
+      "Loft med afskalning og revner",
+      "Løs maling flere steder",
+      "Slid omkring installationer",
+      "Gulv hvor det øverste lag var væk og underlaget blotlagt",
+    ],
+    workDone: [
+      "Klargøring og maling af loft og vægge",
+      "Nyt gulv",
+      "Ny belysning med tilhørende installationsmaterialer",
+    ],
+    result: "Gulvet er fornyet, loft og vægge er malet, og der er monteret ny belysning.",
+    resultNote: "Efterbillederne dokumenterer især gulv og belysning.",
+  },
+];

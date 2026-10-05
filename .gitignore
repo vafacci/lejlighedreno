@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+node_modules/.cache
+
+# Originalbillederne er store og udgives ikke. Opbevar dem adskilt fra repoet.
+originals
