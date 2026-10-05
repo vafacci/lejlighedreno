@@ -68,7 +68,6 @@ export function Lightbox({ slides, index, onClose, onIndex }: Props) {
               src={slide.src}
               file={slide.file}
               alt={slide.alt}
-              frame={frame}
               eager
             />
           </div>

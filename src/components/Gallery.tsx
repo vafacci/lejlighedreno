@@ -25,7 +25,6 @@ export function Gallery({ images, onOpen }: Props) {
               src={image.preview}
               file={image.file}
               alt={image.caption}
-              frame={image.frame}
             />
           </button>
           <figcaption>{image.caption}</figcaption>

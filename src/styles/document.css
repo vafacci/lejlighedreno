@@ -325,12 +325,11 @@ a { color: inherit; }
 .shot img,
 .lightbox-stage img {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: auto;
-  max-width: none;
-  object-fit: unset;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .shot .missing,

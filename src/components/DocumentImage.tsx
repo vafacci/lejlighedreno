@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { copy } from "../data/copy";
 import type { Frame } from "../data/types";
 
@@ -16,26 +16,14 @@ export function frameRatio(frame: Frame): string {
   return box ? `${box.width} / ${box.height}` : `${frame.width} / ${frame.height}`;
 }
 
-/** Viser filen i sit eget format. Sorte bjælker skjules ved at flytte billedet, ikke ved at strække det. */
-function contentStyle(frame: Frame): CSSProperties {
-  const box = frame.content;
-  if (!box) return { width: "100%", height: "auto" };
-  return {
-    width: `${(frame.width / box.width) * 100}%`,
-    height: "auto",
-    transform: `translate(${(-box.x / frame.width) * 100}%, ${(-box.y / frame.height) * 100}%)`,
-  };
-}
-
 type Props = {
   src: string;
   file: string;
   alt: string;
-  frame: Frame;
   eager?: boolean;
 };
 
-export function DocumentImage({ src, file, alt, frame, eager = false }: Props) {
+export function DocumentImage({ src, file, alt, eager = false }: Props) {
   const [missing, setMissing] = useState(false);
 
   if (missing) {
@@ -53,7 +41,6 @@ export function DocumentImage({ src, file, alt, frame, eager = false }: Props) {
       alt={alt}
       loading={eager ? "eager" : "lazy"}
       decoding="async"
-      style={contentStyle(frame)}
       onError={() => {
         reportMissing(file);
         setMissing(true);

@@ -25,37 +25,82 @@ const RECEIPTS = new Set([
   "IMG_7781", "IMG_7782", "IMG_7783", "IMG_44091", "IMG_44061",
 ]);
 
-async function dimensions(file) {
-  const { stdout } = await run("ffprobe", [
-    "-v", "error",
-    "-select_streams", "v:0",
-    "-show_entries", "stream=width,height",
-    "-show_entries", "stream_side_data=rotation",
-    "-of", "json",
-    file,
-  ]);
-  const stream = JSON.parse(stdout).streams[0];
-  const rotation = Math.abs(Number(stream.side_data_list?.[0]?.rotation ?? 0));
-  const turned = rotation === 90 || rotation === 270;
-  return {
-    width: turned ? stream.height : stream.width,
-    height: turned ? stream.width : stream.height,
-  };
+/** JPEG Exif Orientation (1 = normal). PNG har ingen rotation. */
+function jpegOrientation(file) {
+  const data = fs.readFileSync(file);
+  if (data[0] !== 0xff || data[1] !== 0xd8) return 1;
+  let i = 2;
+  while (i + 4 < data.length) {
+    if (data[i] !== 0xff) break;
+    const marker = data[i + 1];
+    const size = data.readUInt16BE(i + 2);
+    if (marker === 0xe1 && data.subarray(i + 4, i + 10).toString("ascii") === "Exif\0\0") {
+      const tiff = i + 10;
+      const le = data.toString("ascii", tiff, tiff + 2) === "II";
+      const u16 = (offset) => (le ? data.readUInt16LE(offset) : data.readUInt16BE(offset));
+      const u32 = (offset) => (le ? data.readUInt32LE(offset) : data.readUInt32BE(offset));
+      let entry = tiff + u32(tiff + 4);
+      const count = u16(entry);
+      entry += 2;
+      for (let n = 0; n < count; n += 1, entry += 12) {
+        if (u16(entry) === 0x0112) return u16(entry + 8);
+      }
+      return 1;
+    }
+    if (marker === 0xda) break;
+    i += 2 + size;
+  }
+  return 1;
+}
+
+function rotateFilter(orientation) {
+  switch (orientation) {
+    case 3:
+      return "transpose=1,transpose=1";
+    case 6:
+      return "transpose=1";
+    case 8:
+      return "transpose=2";
+    default:
+      return null;
+  }
 }
 
 async function convert(source, target, longEdge, quality) {
-  const { width, height } = await dimensions(source);
-  const scale = Math.min(1, longEdge / Math.max(width, height));
-  const w = Math.round((width * scale) / 2) * 2;
-  const h = Math.round((height * scale) / 2) * 2;
+  const filters = [];
+  const rotate = rotateFilter(jpegOrientation(source));
+  if (rotate) filters.push(rotate);
+  filters.push(
+    `scale=${longEdge}:${longEdge}:force_original_aspect_ratio=decrease:flags=lanczos`,
+    "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+  );
   await run("ffmpeg", [
-    "-y", "-v", "error",
-    "-i", source,
-    "-vf", `scale=${w}:${h}:flags=lanczos`,
-    "-q:v", String(quality),
-    "-pix_fmt", "yuvj420p",
+    "-y",
+    "-v",
+    "error",
+    "-noautorotate",
+    "-i",
+    source,
+    "-vf",
+    filters.join(","),
+    "-q:v",
+    String(quality),
+    "-pix_fmt",
+    "yuvj420p",
     target,
   ]);
+  const { stdout } = await run("ffprobe", [
+    "-v",
+    "error",
+    "-select_streams",
+    "v:0",
+    "-show_entries",
+    "stream=width,height",
+    "-of",
+    "csv=p=0:s=x",
+    target,
+  ]);
+  const [w, h] = stdout.trim().split("x").map(Number);
   return { w, h };
 }
 
